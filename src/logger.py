@@ -7,32 +7,6 @@ from beautifultable import BeautifulTable
 # constants
 DATA_FILE = '.logger-data.json'
 
-class Item:
-   def  __init__(self, message, start_time = None):
-      self.message = message
-
-      # set start time
-      if start_time is None:
-         self.start_time = datetime.datetime.now()
-      else:
-         self.start_time = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f")
-
-   # returns a dictionary of itself
-   def getDict(self):
-      dictData = {
-         "message": self.message,
-         "start_time": self.start_time
-      }
-
-      return dictData
-
-   # returns the formatted version of the date start time
-   def getDisplayDate(self):
-      return self.start_time.strftime("%x")
-
-   # returns the formatted version of the time start time
-   def getDisplayTime(self):
-      return self.start_time.strftime("%I:%M %p")
 
 # print specified number of line breaks
 def space(numSpaces = 1):
@@ -52,18 +26,51 @@ def getTable(data, columns=[]):
    return table
 
 
+
+class Item:
+   def  __init__(self, message, index, start_time = None):
+      self.message = message
+      self.index = index
+
+      # set start time
+      if start_time is None:
+         self.start_time = datetime.datetime.now()
+      else:
+         self.start_time = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f")
+
+
+   # returns a dictionary of itself
+   def getDict(self):
+      dictData = {
+         "index": self.index,
+         "message": self.message,
+         "start_time": self.start_time
+      }
+
+      return dictData
+
+   # returns the formatted version of the date start time
+   def getDisplayDate(self):
+      return self.start_time.strftime("%x")
+
+   # returns the formatted version of the time start time
+   def getDisplayTime(self):
+      return self.start_time.strftime("%I:%M %p")
+
+
 # prints a table version of the items
 def printItems(items):
    data = []
 
    for item in items:
       row = []
+      row.append(item.index)
       row.append(item.getDisplayDate())
       row.append(item.getDisplayTime())
       row.append(item.message)
       data.append(row)
 
-   print(getTable(data, ['Date', 'Time', 'Message']))
+   print(getTable(data, ['Index', 'Date', 'Time', 'Message']))
 
 # creates an empty data file
 def createEmptyDataFile():
@@ -78,7 +85,9 @@ def readDataFile():
       data = json.loads(dataFile.read())
 
       for d in data:
-         items.append(Item(d['message'], d['start_time']))
+         item = Item(d['message'], d['index'])
+         # items.append(Item(d['index'], d['message'], d['start_time']))
+         items.append(item)
 
       return items
 
@@ -96,6 +105,7 @@ def getItemsDictFromList(itemsList):
 
    for item in itemsList:
       itemDict = {
+         "index": item.index,
          "message": item.message,
          "start_time": item.start_time
       }
@@ -116,13 +126,31 @@ def getItemsInDay(items, day = None):
 
    return itemsInDay
 
+def removeItem(items, index):
+   items.pop(int(index))
+   return resetItemIds(items)
+
+
+# resets the items ids
+def resetItemIds(items):
+   for count in range(len(items)):
+      items[count].index = count
+
+   return items
+
+
+
+
+
+
 
 ############################ MAIN ########################################
 
 # create command line arguments
-parser = argparse.ArgumentParser(description="View your database table's fields and types")
+parser = argparse.ArgumentParser(description="Your personal command line activity logger.")
 parser.add_argument('-a', '--add', nargs=1, help="Add a new item to your log")
-parser.add_argument('-d', '--day', nargs=1, help="(dd/mm/yy) View log on specified day")
+parser.add_argument('-d', '--day', nargs=1, help="(dd/mm/yy) View your log on specified day")
+parser.add_argument('-r', '--remove', nargs=1, help="Remove item at the specified index")
 args = parser.parse_args()
 
 # create new config file if one does not exist in the local directory
@@ -136,20 +164,30 @@ items = readDataFile()
 # user requested to add a new item
 if args.add != None:
    newItemMessage = args.add[0]
-   newItem = Item(newItemMessage) 
+   index = len(items)
+   newItem = Item(message=newItemMessage, index=index) 
    items.append(newItem)
    writeItemsToDataFile(items)
    print('Item was added.')
-   space(2)
-   printItems([newItem])
 
 # user requested to view items in a specified day
 elif args.day != None:
    dayToSearch = args.day[0]
    itemsInDay = getItemsInDay(items, dayToSearch)
+   space(2)
    printItems(itemsInDay)
+
+# remove am item
+elif args.remove != None:
+   items = removeItem(items, args.remove[0])
+   print('\n\nItem was removed from log')
+   writeItemsToDataFile(items)
+
 
 # print the items for today
 else:
    itemsInDay = getItemsInDay(items)
+   space()
    printItems(itemsInDay)
+
+
