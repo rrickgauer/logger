@@ -1,9 +1,14 @@
 import datetime
 
 class Item:
-   def  __init__(self, message):
+   def  __init__(self, message, start_time = None):
       self.message = message
-      self.start_time = datetime.datetime.now()
+
+      # set start time
+      if start_time is None:
+         self.start_time = datetime.datetime.now()
+      else:
+         self.start_time = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f")
 
 
    def getDict(self):
@@ -17,10 +22,10 @@ class Item:
    def getDisplayDate(self):
       return self.start_time.strftime("%x")
 
-   def getDisplayDate(self):
+   def getDisplayTime(self):
       return self.start_time.strftime("%I:%M %p")
 
-      
+
 
 
 
