@@ -138,6 +138,10 @@ def resetItemIds(items):
 
    return items
 
+# update an item's message
+def editItemMessage(items, index, message):
+   items[int(index)].message = message
+   return items
 
 
 
@@ -151,6 +155,7 @@ parser = argparse.ArgumentParser(description="Your personal command line activit
 parser.add_argument('-a', '--add', nargs=1, help="Add a new item to your log")
 parser.add_argument('-d', '--day', nargs=1, help="(dd/mm/yy) View your log on specified day")
 parser.add_argument('-r', '--remove', nargs=1, help="Remove item at the specified index")
+parser.add_argument('-e', '--edit', nargs=2, help="Edit an item's message")
 args = parser.parse_args()
 
 # create new config file if one does not exist in the local directory
@@ -180,9 +185,15 @@ elif args.day != None:
 # remove am item
 elif args.remove != None:
    items = removeItem(items, args.remove[0])
-   print('\n\nItem was removed from log')
+   print('Item was removed from log')
    writeItemsToDataFile(items)
 
+elif args.edit != None:
+   index = args.edit[0]
+   newMessage = args.edit[1]
+   items = editItemMessage(items, index, newMessage)
+   print('Item message updated')
+   writeItemsToDataFile(items)
 
 # print the items for today
 else:
