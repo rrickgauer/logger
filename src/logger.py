@@ -1,11 +1,13 @@
 import json
-from os import path
+import os
 import argparse
 import datetime
 from beautifultable import BeautifulTable
+from sys import argv
 
-# constants
-DATA_FILE = '.logger-data.json'
+# constants 
+SCRIPT_PATH = os.path.dirname(os.path.realpath(sys.argv[0]))   # absolute path of the python script location
+DATA_FILE = SCRIPT_PATH + '\\.logger-data.json'                # abs path of data file
 
 
 # print specified number of line breaks
@@ -156,7 +158,7 @@ parser.add_argument('-e', '--edit', nargs=2, metavar=('Index', 'Message'), help=
 args = parser.parse_args()
 
 # create new config file if one does not exist in the local directory
-if not path.exists(DATA_FILE):
+if not os.path.exists(DATA_FILE):
    createEmptyDataFile()
 
 # original data from file
@@ -198,3 +200,5 @@ else:
    itemsInDay = getItemsInDay(items)
    space()
    printItems(itemsInDay)
+
+space()
