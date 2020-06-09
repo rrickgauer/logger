@@ -5,7 +5,7 @@ import datetime
 from beautifultable import BeautifulTable
 
 # constants
-DATA_FILE = 'C:\\Users\\rrick\\AppData\Local\Programs\Python\Python37\Scripts.logger-data.json'
+DATA_FILE = '.logger-data.json'
 
 
 # print specified number of line breaks
