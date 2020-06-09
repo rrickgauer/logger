@@ -7,10 +7,6 @@ from beautifultable import BeautifulTable
 # constants
 DATA_FILE = '.logger-data.json'
 
-
-
-
-
 class Item:
    def  __init__(self, message, start_time = None):
       self.message = message
@@ -21,7 +17,7 @@ class Item:
       else:
          self.start_time = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f")
 
-
+   # returns a dictionary of itself
    def getDict(self):
       dictData = {
          "message": self.message,
@@ -30,17 +26,20 @@ class Item:
 
       return dictData
 
+   # returns the formatted version of the date start time
    def getDisplayDate(self):
       return self.start_time.strftime("%x")
 
+   # returns the formatted version of the time start time
    def getDisplayTime(self):
       return self.start_time.strftime("%I:%M %p")
 
-
+# print specified number of line breaks
 def space(numSpaces = 1):
    for x in range(numSpaces):
       print('')
 
+# returns a BeautifulTable object
 def getTable(data, columns=[]):
    table = BeautifulTable(max_width=1000)
    table.set_style(BeautifulTable.STYLE_COMPACT)
@@ -71,7 +70,6 @@ def createEmptyDataFile():
    f = open(DATA_FILE, "w")
    f.write("[]")
    f.close()
-
 
 # returns the data from the DATA_FILE
 def readDataFile():
@@ -106,7 +104,7 @@ def getItemsDictFromList(itemsList):
 
    return itemsDict
 
-
+# returns a list of items that are in specified day
 def getItemsInDay(items, day = None):      
    if day is None:
       day = datetime.datetime.now().strftime("%x")
@@ -119,10 +117,7 @@ def getItemsInDay(items, day = None):
    return itemsInDay
 
 
-########################## MAIN FUNCTION ########################################
-
-
-
+############################ MAIN ########################################
 
 # create command line arguments
 parser = argparse.ArgumentParser(description="View your database table's fields and types")
