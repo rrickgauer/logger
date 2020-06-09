@@ -6,8 +6,10 @@ from beautifultable import BeautifulTable
 from sys import argv
 
 # constants 
-SCRIPT_PATH = os.path.dirname(os.path.realpath(sys.argv[0]))   # absolute path of the python script location
-DATA_FILE = SCRIPT_PATH + '\\.logger-data.json'                # abs path of data file
+# SCRIPT_PATH = os.path.dirname(os.path.realpath(sys.argv[0]))   # absolute path of the python script location
+# DATA_FILE = SCRIPT_PATH + '\\.logger-data.json'                # abs path of data file
+
+DATA_FILE = '.logger-data.json'
 
 
 # print specified number of line breaks
@@ -38,7 +40,13 @@ class Item:
       if start_time is None:
          self.start_time = datetime.datetime.now()
       else:
-         self.start_time = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f")
+         self.start_time = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+
+      # round up to nearest 15 minute interval
+      discard = datetime.timedelta(minutes=self.start_time.minute % 15, seconds=self.start_time.second, microseconds=self.start_time.microsecond)
+      self.start_time -= discard
+      if discard >= datetime.timedelta(minutes=8):
+          self.start_time += datetime.timedelta(minutes=15)
 
 
    # returns a dictionary of itself
@@ -59,6 +67,12 @@ class Item:
    def getDisplayTime(self):
       return self.start_time.strftime("%I:%M %p")
 
+   def getWeekNum(self):
+      # return self.start_timed.strftime("%U")
+      return getWeekNum(self.start_time)
+
+   def getDayNum(self):
+      return self.start_time.strftime("%w")
 
 # prints a table version of the items
 def printItems(items):
@@ -146,6 +160,32 @@ def editItemMessage(items, index, message):
    return items
 
 
+def getEmptyWeekdayLists():
+   return [], [], [], [], [], [], []
+
+
+def getWeekNum(date):
+   return date.strftime("%U")
+
+def sortWeekdayItemsLists(weekdayLists):
+   for count in len(weekdayLists):
+      weekdayLists[count] = sortItems(weekdayLists[count])
+
+   return weekdayLists
+
+def sortItems(items):
+   return sorted(items, key=lambda x: x.start_time, reverse=False)
+
+def printDayInWeekItems(dayOfWeek, items):
+   if len(items) < 1:
+      space()
+      print('No ' + dayOfWeek + ' items.')
+      
+   else:
+      space(2)
+      print(dayOfWeek + ' items:')
+      printItems(items)
+
 
 ############################ MAIN ########################################
 
@@ -155,9 +195,11 @@ parser.add_argument('-a', '--add', nargs=1, metavar=('Message'), help="Add a new
 parser.add_argument('-d', '--day', nargs=1, metavar=('Day'), help="View your log on specified day (dd/mm/yy) ")
 parser.add_argument('-r', '--remove', nargs=1, metavar=('Index'), help="Remove item at the specified index")
 parser.add_argument('-e', '--edit', nargs=2, metavar=('Index', 'Message'), help="Edit an item's message")
+parser.add_argument('-w', '--week', nargs=1, metavar=('Date'), help="Display weekly log")
+
 args = parser.parse_args()
 
-# create new config file if one does not exist in the local directory
+# create new data file if one does not exist
 if not os.path.exists(DATA_FILE):
    createEmptyDataFile()
 
@@ -195,10 +237,40 @@ elif args.edit != None:
    print('Item message updated')
    writeItemsToDataFile(items)
 
+elif args.week != None:
+   dayToSearch = datetime.datetime.strptime(args.week[0], "%x")
+   weeknum = getWeekNum(dayToSearch)
+
+
+   # list of all items in the specified weeknum
+   itemsInWeek = []
+   for item in items:
+      if item.getWeekNum() == weeknum:
+         itemsInWeek.append(item)
+
+   # set list to 7 empty lists
+   weekdayLists = []
+   for x in range(7):
+      weekdayLists.append([])
+
+   # add appropriate days to list
+   for item in itemsInWeek:
+      weekdayLists[int(item.getDayNum())].append(item)
+   
+
+   # print days
+   printDayInWeekItems('Sunday', weekdayLists[0])
+   printDayInWeekItems('Monday', weekdayLists[1])
+   printDayInWeekItems('Tuesday', weekdayLists[2])
+   printDayInWeekItems('Wednesday', weekdayLists[3])
+   printDayInWeekItems('Thursday', weekdayLists[4])
+   printDayInWeekItems('Friday', weekdayLists[5])
+   printDayInWeekItems('Saturday', weekdayLists[6])
+
+
 # print the items for today
 else:
    itemsInDay = getItemsInDay(items)
    space()
    printItems(itemsInDay)
 
-space()
