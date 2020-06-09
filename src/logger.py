@@ -1,12 +1,15 @@
-from Utilities import Utilities as util
-# from Item import Item
 import json
 from os import path
 import argparse
 import datetime
+from beautifultable import BeautifulTable
 
 # constants
 DATA_FILE = '.logger-data.json'
+
+
+
+
 
 class Item:
    def  __init__(self, message, start_time = None):
@@ -34,6 +37,20 @@ class Item:
       return self.start_time.strftime("%I:%M %p")
 
 
+def space(numSpaces = 1):
+   for x in range(numSpaces):
+      print('')
+
+def getTable(data, columns=[]):
+   table = BeautifulTable(max_width=1000)
+   table.set_style(BeautifulTable.STYLE_COMPACT)
+   table.column_headers = columns
+
+   for row in data:
+      table.append_row(row)
+
+   table.column_alignments = BeautifulTable.ALIGN_LEFT
+   return table
 
 
 # prints a table version of the items
@@ -47,7 +64,7 @@ def printItems(items):
       row.append(item.message)
       data.append(row)
 
-   print(util.getTable(data, ['Date', 'Time', 'Message']))
+   print(getTable(data, ['Date', 'Time', 'Message']))
 
 # creates an empty data file
 def createEmptyDataFile():
@@ -104,6 +121,9 @@ def getItemsInDay(items, day = None):
 
 ########################## MAIN FUNCTION ########################################
 
+
+
+
 # create command line arguments
 parser = argparse.ArgumentParser(description="View your database table's fields and types")
 parser.add_argument('-a', '--add', nargs=1, help="Add a new item to your log")
@@ -125,7 +145,7 @@ if args.add != None:
    items.append(newItem)
    writeItemsToDataFile(items)
    print('Item was added.')
-   util.space(2)
+   space(2)
    printItems([newItem])
 
 # user requested to view items in a specified day
