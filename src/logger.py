@@ -145,9 +145,6 @@ def editItemMessage(items, index, message):
 
 
 
-
-
-
 ############################ MAIN ########################################
 
 # create command line arguments
@@ -188,6 +185,7 @@ elif args.remove != None:
    print('Item was removed from log')
    writeItemsToDataFile(items)
 
+# edit an item message
 elif args.edit != None:
    index = args.edit[0]
    newMessage = args.edit[1]
