@@ -85,7 +85,7 @@ def readDataFile():
       data = json.loads(dataFile.read())
 
       for d in data:
-         item = Item(d['message'], d['index'])
+         item = Item(d['message'], d['index'], d['start_time'])
          # items.append(Item(d['index'], d['message'], d['start_time']))
          items.append(item)
 
