@@ -148,11 +148,11 @@ def editItemMessage(items, index, message):
 ############################ MAIN ########################################
 
 # create command line arguments
-parser = argparse.ArgumentParser(description="Your personal command line activity logger.")
-parser.add_argument('-a', '--add', nargs=1, help="Add a new item to your log")
-parser.add_argument('-d', '--day', nargs=1, help="(dd/mm/yy) View your log on specified day")
-parser.add_argument('-r', '--remove', nargs=1, help="Remove item at the specified index")
-parser.add_argument('-e', '--edit', nargs=2, help="Edit an item's message")
+parser = argparse.ArgumentParser(description="Your personal activity logger.")
+parser.add_argument('-a', '--add', nargs=1, metavar=('Message'), help="Add a new item to your log")
+parser.add_argument('-d', '--day', nargs=1, metavar=('Day'), help="View your log on specified day (dd/mm/yy) ")
+parser.add_argument('-r', '--remove', nargs=1, metavar=('Index'), help="Remove item at the specified index")
+parser.add_argument('-e', '--edit', nargs=2, metavar=('Index', 'Message'), help="Edit an item's message")
 args = parser.parse_args()
 
 # create new config file if one does not exist in the local directory
