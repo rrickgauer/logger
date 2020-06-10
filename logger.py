@@ -55,6 +55,7 @@ class Item:
          "start_time": self.start_time
       }
 
+      
    # returns the formatted version of the date start time
    def getDisplayDate(self):
       return self.start_time.strftime("%x")
@@ -67,20 +68,44 @@ class Item:
       # return self.start_timed.strftime("%U")
       return getWeekNum(self.start_time)
 
-   def getDayNum(self):
+   def getDayOfWeekNum(self):
       return self.start_time.strftime("%w")
+
+   def getDayOfYearNum(self):
+      return self.start_time.strftime("%j")
+
+   def getWeekdayShort(self):
+      return self.start_time.strftime("%a")
+
+
+# print all items that fall within a specified date's week number
+def printDaysOfWeekItems(weekdayLists):
+   # create a full list of the weekly messages to print out
+   fullList = []
+   for l in weekdayLists:
+      for x in l:
+         fullList.append(x)
+
+   # print items
+   printItems(fullList)
+
 
 
 # prints a table version of the items
 def printItems(items):
    data = []
-   for item in items:
-      if item == '':
-         data.append(['', '', '', ''])
-      else:
-         data.append([item.index, item.getDisplayDate(), item.getDisplayTime(), item.message])
+   currentDayNumber = items[0].getDayOfYearNum()
 
-   print(getTable(data, ['Index', 'Date', 'Time', 'Message']))
+   for item in items:
+      
+      # if item is in a different day than the previous print line break
+      if item.getDayOfYearNum() != currentDayNumber:
+         currentDayNumber = item.getDayOfYearNum()
+         data.append(['', '', '', '', ''])
+
+      data.append([item.index, item.getWeekdayShort(), item.getDisplayDate(), item.getDisplayTime(), item.message])
+
+   print(getTable(data, ['Index', 'Day', 'Date', 'Time', 'Message']))
 
 
 # creates an empty data file
@@ -123,9 +148,9 @@ def getItemsDictFromList(itemsList):
    return itemsDict
 
 # returns a list of items that are in specified day
-def getItemsInDay(items, day = None):      
-   if day is None:
-      day = datetime.datetime.now().strftime("%x")
+def getItemsInDay(items, day = None):
+      
+   if day is None: day = datetime.datetime.now().strftime("%x")
 
    itemsInDay = []
    for item in items:
@@ -140,13 +165,16 @@ def removeItem(items, index):
    items.pop(int(index))
    return resetItemIds(items)
 
-
+# combines sortItems() and resetItemIds()
 def sortAndResetItems(items):
    items = sortItems(items) 
    items = resetItemIds(items)
 
    return items
 
+# returns a sorted list of items
+def sortItems(items):
+   return sorted(items, key=lambda x: x.start_time, reverse=False)
 
 
 # returns list of items with correct indexes
@@ -162,38 +190,25 @@ def editItemMessage(items, index, message):
    return items
 
 # returns a date's weeknumber (0-51)
+# needs to be a datetime.datetime object
 def getWeekNum(date):
    return date.strftime("%U")
 
-# returns a sorted list of items
-def sortItems(items):
-   return sorted(items, key=lambda x: x.start_time, reverse=False)
 
-def printDaysOfWeekItems(weekdayLists):
-   # add a line break
-   for l in weekdayLists:
-      l.append('')
 
-   # create a full list of the weekly messages to print out
-   fullList = []
-   for l in weekdayLists:
-      for x in l:
-         fullList.append(x)
-
-   # print items
-   printItems(fullList)
 
 
 ############################ MAIN ########################################
 
 # create command line arguments
 parser = argparse.ArgumentParser(description="Your personal activity logger.")
-parser.add_argument('-a', '--add', nargs=1, metavar=('Message'), help="Add a new item to your log")
+parser.add_argument('-n', '--new', nargs=1, metavar=('Message'), help="Insert new item to your log")
 parser.add_argument('-d', '--day', nargs=1, metavar=('Day'), help="View your log on specified day (dd/mm/yy) ")
 parser.add_argument('-r', '--remove', nargs=1, metavar=('Index'), help="Remove item at the specified index")
 parser.add_argument('-e', '--edit', nargs=2, metavar=('Index', 'Message'), help="Edit an item's message")
 parser.add_argument('-w', '--week', nargs=1, metavar=('Date'), help="Display weekly log")
 parser.add_argument('-t', '--time', nargs=1, metavar=('Index'), help="Update an item's start time")
+parser.add_argument('-a', '--all', action="store_true", help="Update an item's start time")
 args = parser.parse_args()
 
 # create new data file if one does not exist
@@ -201,10 +216,9 @@ if not os.path.exists(DATA_FILE):
    createEmptyDataFile()
 
 items = readDataFile()     # original data from file
-# items = sortItems(items)   # sort the items by date
 
 # user requested to add a new item
-if args.add != None:
+if args.new != None:
    newItemMessage = args.add[0]
    index = len(items)
    newItem = Item(message=newItemMessage, index=index) 
@@ -245,13 +259,13 @@ elif args.week != None:
    # place appropriate items that fall under the week number into their respective day lists
    for item in items:
       if item.getWeekNum() == weeknum:
-         weekdayLists[int(item.getDayNum())].append(item)
+         weekdayLists[int(item.getDayOfWeekNum())].append(item)
 
    space()
    printDaysOfWeekItems(weekdayLists)
 
 
-# user wants to edit the time for an item
+# user start time
 elif args.time != None:
    # get item to be modified
    item = items[int(args.time[0])]
@@ -272,12 +286,19 @@ elif args.time != None:
    writeItemsToDataFile(sortAndResetItems(items))
    print('\nItem updated')
 
+# print out all items
+elif args.all == True:
+   printItems(items)
+   space(1)
+
+
 
 # print the items for today
 else:
    itemsInDay = getItemsInDay(items)
    space(2)
    printItems(itemsInDay)
+   space()
 
 # update and save items
 writeItemsToDataFile(sortAndResetItems(items))
