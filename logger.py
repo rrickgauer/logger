@@ -236,6 +236,7 @@ elif args.week != None:
       if item.getWeekNum() == weeknum:
          weekdayLists[int(item.getDayNum())].append(item)
 
+   space()
    printDaysOfWeekItems(weekdayLists)
 
 # print the items for today
@@ -244,3 +245,4 @@ else:
    space()
    printItems(itemsInDay)
 
+space()

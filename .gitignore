@@ -1,5 +1,7 @@
 __pycache__/
-
 .logger-data.json
-
 test.py
+install.py
+build/
+dist/
+logger.spec
