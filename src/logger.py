@@ -49,13 +49,11 @@ class Item:
 
    # returns a dictionary of itself
    def getDict(self):
-      dictData = {
+      return {
          "index": self.index,
          "message": self.message,
          "start_time": self.start_time
       }
-
-      return dictData
 
    # returns the formatted version of the date start time
    def getDisplayDate(self):
@@ -75,7 +73,6 @@ class Item:
 
 # prints a table version of the items
 def printItems(items):
-
    data = []
    for item in items:
       if item == '':
@@ -116,15 +113,12 @@ def writeItemsToDataFile(items):
 # returns a list of item dicts
 def getItemsDictFromList(itemsList):
    itemsDict = []
-
    for item in itemsList:
-      itemDict = {
+      itemsDict.append({
          "index": item.index,
          "message": item.message,
          "start_time": item.start_time
-      }
-
-      itemsDict.append(itemDict)
+      })
 
    return itemsDict
 
@@ -140,10 +134,10 @@ def getItemsInDay(items, day = None):
 
    return itemsInDay
 
+# remove an item at the specified index
 def removeItem(items, index):
    items.pop(int(index))
    return resetItemIds(items)
-
 
 # resets the items ids
 def resetItemIds(items):
@@ -161,12 +155,7 @@ def editItemMessage(items, index, message):
 def getWeekNum(date):
    return date.strftime("%U")
 
-def sortWeekdayItemsLists(weekdayLists):
-   for count in len(weekdayLists):
-      weekdayLists[count] = sortItems(weekdayLists[count])
-
-   return weekdayLists
-
+# returns a sorted list of items
 def sortItems(items):
    return sorted(items, key=lambda x: x.start_time, reverse=False)
 
@@ -183,16 +172,6 @@ def printDaysOfWeekItems(weekdayLists):
 
    # print items
    printItems(fullList)
-
-def printDayInWeekItems(dayOfWeek, items):
-   if len(items) < 1:
-      space()
-      print('No ' + dayOfWeek + ' items.')
-      
-   else:
-      space(2)
-      print(dayOfWeek + ' items:')
-      printItems(items)
 
 
 ############################ MAIN ########################################
@@ -243,25 +222,19 @@ elif args.edit != None:
    print('Item message updated')
    writeItemsToDataFile(items)
 
+# print the log of the week that encapsulates the date given
 elif args.week != None:
-   # get the use input date 
+   # get the user input date 
    dayToSearch = datetime.datetime.strptime(args.week[0], "%x")
    weeknum = getWeekNum(dayToSearch)
+   
+   # create 7 empty lists to hold items for day of the week
+   weekdayLists = [[], [], [], [], [], [], []]
 
-   # list of all items in the specified weeknum
-   itemsInWeek = []
+   # place appropriate items that fall under the week number into their respective day lists
    for item in items:
       if item.getWeekNum() == weeknum:
-         itemsInWeek.append(item)
-
-   # set list to 7 empty lists
-   weekdayLists = []
-   for x in range(7):
-      weekdayLists.append([])
-
-   # add appropriate days to list
-   for item in itemsInWeek:
-      weekdayLists[int(item.getDayNum())].append(item)
+         weekdayLists[int(item.getDayNum())].append(item)
 
    printDaysOfWeekItems(weekdayLists)
 
