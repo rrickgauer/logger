@@ -75,6 +75,7 @@ class Item:
 
 # prints a table version of the items
 def printItems(items):
+
    data = []
    for item in items:
       if item == '':
@@ -156,11 +157,7 @@ def editItemMessage(items, index, message):
    items[int(index)].message = message
    return items
 
-
-def getEmptyWeekdayLists():
-   return [], [], [], [], [], [], []
-
-
+# returns a date's weeknumber (0-51)
 def getWeekNum(date):
    return date.strftime("%U")
 
@@ -213,9 +210,8 @@ args = parser.parse_args()
 if not os.path.exists(DATA_FILE):
    createEmptyDataFile()
 
-# original data from file
-items = readDataFile()
-
+items = readDataFile()     # original data from file
+items = sortItems(items)   # sort the items by date
 
 # user requested to add a new item
 if args.add != None:
