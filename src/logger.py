@@ -29,8 +29,6 @@ def getTable(data, columns=[]):
    table.column_alignments = BeautifulTable.ALIGN_LEFT
    return table
 
-
-
 class Item:
    def  __init__(self, message, index, start_time = None):
       self.message = message
@@ -74,19 +72,18 @@ class Item:
    def getDayNum(self):
       return self.start_time.strftime("%w")
 
+
 # prints a table version of the items
 def printItems(items):
    data = []
-
    for item in items:
-      row = []
-      row.append(item.index)
-      row.append(item.getDisplayDate())
-      row.append(item.getDisplayTime())
-      row.append(item.message)
-      data.append(row)
+      if item == '':
+         data.append(['', '', '', ''])
+      else:
+         data.append([item.index, item.getDisplayDate(), item.getDisplayTime(), item.message])
 
    print(getTable(data, ['Index', 'Date', 'Time', 'Message']))
+
 
 # creates an empty data file
 def createEmptyDataFile():
@@ -177,13 +174,18 @@ def sortItems(items):
    return sorted(items, key=lambda x: x.start_time, reverse=False)
 
 def printDaysOfWeekItems(weekdayLists):
-   printDayInWeekItems('Sunday', weekdayLists[0])
-   printDayInWeekItems('Monday', weekdayLists[1])
-   printDayInWeekItems('Tuesday', weekdayLists[2])
-   printDayInWeekItems('Wednesday', weekdayLists[3])
-   printDayInWeekItems('Thursday', weekdayLists[4])
-   printDayInWeekItems('Friday', weekdayLists[5])
-   printDayInWeekItems('Saturday', weekdayLists[6])   
+   # add a line break
+   for l in weekdayLists:
+      l.append('')
+
+   # create a full list of the weekly messages to print out
+   fullList = []
+   for l in weekdayLists:
+      for x in l:
+         fullList.append(x)
+
+   # print items
+   printItems(fullList)
 
 def printDayInWeekItems(dayOfWeek, items):
    if len(items) < 1:
@@ -205,7 +207,6 @@ parser.add_argument('-d', '--day', nargs=1, metavar=('Day'), help="View your log
 parser.add_argument('-r', '--remove', nargs=1, metavar=('Index'), help="Remove item at the specified index")
 parser.add_argument('-e', '--edit', nargs=2, metavar=('Index', 'Message'), help="Edit an item's message")
 parser.add_argument('-w', '--week', nargs=1, metavar=('Date'), help="Display weekly log")
-
 args = parser.parse_args()
 
 # create new data file if one does not exist
@@ -247,6 +248,7 @@ elif args.edit != None:
    writeItemsToDataFile(items)
 
 elif args.week != None:
+   # get the use input date 
    dayToSearch = datetime.datetime.strptime(args.week[0], "%x")
    weeknum = getWeekNum(dayToSearch)
 
