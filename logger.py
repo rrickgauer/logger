@@ -102,7 +102,7 @@ def readDataFile():
 
       return items
 
-# returns a list of item classes from the data file
+# writes the list of item classes to the data file
 def writeItemsToDataFile(items):
    itemsDict = getItemsDictFromList(items)
    jsonString = json.dumps(itemsDict, indent=4, sort_keys=True, default=str)
@@ -135,11 +135,21 @@ def getItemsInDay(items, day = None):
    return itemsInDay
 
 # remove an item at the specified index
+# returns the new item list with ids reset
 def removeItem(items, index):
    items.pop(int(index))
    return resetItemIds(items)
 
-# resets the items ids
+
+def sortAndResetItems(items):
+   items = sortItems(items) 
+   items = resetItemIds(items)
+
+   return items
+
+
+
+# returns list of items with correct indexes
 def resetItemIds(items):
    for count in range(len(items)):
       items[count].index = count
@@ -183,6 +193,7 @@ parser.add_argument('-d', '--day', nargs=1, metavar=('Day'), help="View your log
 parser.add_argument('-r', '--remove', nargs=1, metavar=('Index'), help="Remove item at the specified index")
 parser.add_argument('-e', '--edit', nargs=2, metavar=('Index', 'Message'), help="Edit an item's message")
 parser.add_argument('-w', '--week', nargs=1, metavar=('Date'), help="Display weekly log")
+parser.add_argument('-t', '--time', nargs=1, metavar=('Index'), help="Update an item's start time")
 args = parser.parse_args()
 
 # create new data file if one does not exist
@@ -190,7 +201,7 @@ if not os.path.exists(DATA_FILE):
    createEmptyDataFile()
 
 items = readDataFile()     # original data from file
-items = sortItems(items)   # sort the items by date
+# items = sortItems(items)   # sort the items by date
 
 # user requested to add a new item
 if args.add != None:
@@ -208,7 +219,7 @@ elif args.day != None:
    space(2)
    printItems(itemsInDay)
 
-# remove am item
+# remove an item
 elif args.remove != None:
    items = removeItem(items, args.remove[0])
    print('Item was removed from log')
@@ -239,10 +250,34 @@ elif args.week != None:
    space()
    printDaysOfWeekItems(weekdayLists)
 
+
+# user wants to edit the time for an item
+elif args.time != None:
+   # get item to be modified
+   item = items[int(args.time[0])]
+   print('\nItem to be updated:\n')
+   printItems([item])
+ 
+   # remove old item
+   items = removeItem(items, item.index)
+
+   # make new datetime object 
+   newDate = input('\nEnter new date (mm/dd/yy): ')
+   newTime = input('Enter new time (HH:MM AM/PM): ')
+   newStartTime = datetime.datetime.strptime(newDate + ' ' + newTime, "%m/%d/%y %I:%M %p")
+   newItem = Item(item.message, item.index, str(newStartTime))
+
+   # add updated item to the list and data file
+   items.append(newItem)
+   writeItemsToDataFile(sortAndResetItems(items))
+   print('\nItem updated')
+
+
 # print the items for today
 else:
    itemsInDay = getItemsInDay(items)
-   space()
+   space(2)
    printItems(itemsInDay)
 
-space()
+# update and save items
+writeItemsToDataFile(sortAndResetItems(items))
