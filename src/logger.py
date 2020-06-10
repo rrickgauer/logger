@@ -176,6 +176,15 @@ def sortWeekdayItemsLists(weekdayLists):
 def sortItems(items):
    return sorted(items, key=lambda x: x.start_time, reverse=False)
 
+def printDaysOfWeekItems(weekdayLists):
+   printDayInWeekItems('Sunday', weekdayLists[0])
+   printDayInWeekItems('Monday', weekdayLists[1])
+   printDayInWeekItems('Tuesday', weekdayLists[2])
+   printDayInWeekItems('Wednesday', weekdayLists[3])
+   printDayInWeekItems('Thursday', weekdayLists[4])
+   printDayInWeekItems('Friday', weekdayLists[5])
+   printDayInWeekItems('Saturday', weekdayLists[6])   
+
 def printDayInWeekItems(dayOfWeek, items):
    if len(items) < 1:
       space()
@@ -241,7 +250,6 @@ elif args.week != None:
    dayToSearch = datetime.datetime.strptime(args.week[0], "%x")
    weeknum = getWeekNum(dayToSearch)
 
-
    # list of all items in the specified weeknum
    itemsInWeek = []
    for item in items:
@@ -256,17 +264,8 @@ elif args.week != None:
    # add appropriate days to list
    for item in itemsInWeek:
       weekdayLists[int(item.getDayNum())].append(item)
-   
 
-   # print days
-   printDayInWeekItems('Sunday', weekdayLists[0])
-   printDayInWeekItems('Monday', weekdayLists[1])
-   printDayInWeekItems('Tuesday', weekdayLists[2])
-   printDayInWeekItems('Wednesday', weekdayLists[3])
-   printDayInWeekItems('Thursday', weekdayLists[4])
-   printDayInWeekItems('Friday', weekdayLists[5])
-   printDayInWeekItems('Saturday', weekdayLists[6])
-
+   printDaysOfWeekItems(weekdayLists)
 
 # print the items for today
 else:
