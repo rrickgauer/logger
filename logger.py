@@ -209,7 +209,7 @@ parser.add_argument('-r', '--remove', nargs=1, metavar=('Index'), help="Remove i
 parser.add_argument('-e', '--edit', nargs=2, metavar=('Index', 'Message'), help="Edit an item's message")
 parser.add_argument('-w', '--week', nargs=1, metavar=('Date'), help="Display weekly log")
 parser.add_argument('-t', '--time', nargs=1, metavar=('Index'), help="Update an item's start time")
-parser.add_argument('-a', '--all', action="store_true", help="Update an item's start time")
+parser.add_argument('-a', '--all', action="store_true", help="Print all items")
 args = parser.parse_args()
 
 # create new data file if one does not exist
