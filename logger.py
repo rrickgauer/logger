@@ -90,19 +90,16 @@ def printDaysOfWeekItems(weekdayLists):
    # print items
    printItems(fullList)
 
-
-
 # prints a table version of the items
 def printItems(items):
    data = []
-   # currentDayNumber = items[0].getDayOfYearNum()
+   currentDayNumber = items[0].getDayOfYearNum()
 
    for item in items:
-
       # if item is in a different day than the previous print line break
-      # if item.getDayOfYearNum() != currentDayNumber:
-      #    currentDayNumber = item.getDayOfYearNum()
-      #    data.append(['', '', '', '', ''])
+      if item.getDayOfYearNum() != currentDayNumber:
+         currentDayNumber = item.getDayOfYearNum()
+         data.append(['', '', '', '', ''])
 
       data.append([item.index, item.getWeekdayShort(), item.getDisplayDate(), item.getDisplayTime(), item.message])
 
