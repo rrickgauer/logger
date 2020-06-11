@@ -1,3 +1,4 @@
+from prompt_toolkit import prompt
 import json
 import os
 import argparse
@@ -265,7 +266,7 @@ elif args.week != None:
    printDaysOfWeekItems(weekdayLists)
 
 
-# user start time
+# edit start time
 elif args.time != None:
    # get item to be modified
    item = items[int(args.time[0])]
@@ -276,7 +277,7 @@ elif args.time != None:
    items = removeItem(items, item.index)
 
    # make new datetime object 
-   newDate = input('\nEnter new date (mm/dd/yy): ')
+   newDate = prompt('\nEnter new date (mm/dd/yy): ', default=item.getDisplayDate())
    newTime = input('Enter new time (HH:MM AM/PM): ')
    newStartTime = datetime.datetime.strptime(newDate + ' ' + newTime, "%m/%d/%y %I:%M %p")
    newItem = Item(item.message, item.index, str(newStartTime))
