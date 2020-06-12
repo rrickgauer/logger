@@ -7,10 +7,10 @@ from beautifultable import BeautifulTable
 from sys import argv
 
 # constants 
-# SCRIPT_PATH = os.path.dirname(os.path.realpath(sys.argv[0]))   # absolute path of the python script location
-# DATA_FILE = SCRIPT_PATH + '\\.logger-data.json'                # abs path of data file
+SCRIPT_PATH = os.path.dirname(os.path.realpath(sys.argv[0]))   # absolute path of the python script location
+DATA_FILE = SCRIPT_PATH + '\\.logger-data.json'                # abs path of data file
 
-DATA_FILE = '.logger-data.json'
+# DATA_FILE = '.logger-data.json'
 
 
 # print specified number of line breaks
@@ -93,13 +93,13 @@ def printDaysOfWeekItems(weekdayLists):
 # prints a table version of the items
 def printItems(items):
    data = []
-   currentDayNumber = items[0].getDayOfYearNum()
+   # currentDayNumber = items[0].getDayOfYearNum()
 
    for item in items:
       # if item is in a different day than the previous print line break
-      if item.getDayOfYearNum() != currentDayNumber:
-         currentDayNumber = item.getDayOfYearNum()
-         data.append(['', '', '', '', ''])
+      # if item.getDayOfYearNum() != currentDayNumber:
+      #    currentDayNumber = item.getDayOfYearNum()
+      #    data.append(['', '', '', '', ''])
 
       data.append([item.index, item.getWeekdayShort(), item.getDisplayDate(), item.getDisplayTime(), item.message])
 
