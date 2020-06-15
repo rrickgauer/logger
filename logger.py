@@ -7,10 +7,10 @@ from beautifultable import BeautifulTable
 from sys import argv
 
 # constants 
-SCRIPT_PATH = os.path.dirname(os.path.realpath(sys.argv[0]))   # absolute path of the python script location
-DATA_FILE = SCRIPT_PATH + '\\.logger-data.json'                # abs path of data file
+# SCRIPT_PATH = os.path.dirname(os.path.realpath(sys.argv[0]))   # absolute path of the python script location
+# DATA_FILE = SCRIPT_PATH + '\\.logger-data.json'                # abs path of data file
 
-# DATA_FILE = '.logger-data.json'
+DATA_FILE = '.logger-data.json'
 
 
 # print specified number of line breaks
